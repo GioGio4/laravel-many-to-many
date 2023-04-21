@@ -16,7 +16,11 @@ return new class extends Migration
         Schema::table('projects', function (Blueprint $table) {
 
             // Aggiunta della colonna type_id a projects 
-            $table->foreignId('type_id')->nullable()->constrained();
+            $table->foreignId('type_id')
+                ->after('id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
         });
     }
 
