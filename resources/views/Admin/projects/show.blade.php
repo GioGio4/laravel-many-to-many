@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <h3 class="my-3 text-center">{{ $project->title }}</h3>
+    <h3 class="my-3 text-center">
+        {{ $project->title }}</h3>
     <div class="card my-3">
         <div class="row g-0">
             <div class="col-md-12">
@@ -12,10 +13,19 @@
 
                     <p class="card-text">
                         <strong>Type -</strong>
-                        <span style="background-color:{{ $project->type?->color }} ">{{ $project->type?->name }}</span>
+                        <span class="badge"
+                            style="background-color:{{ $project->type?->color }} ">{{ $project->type?->name }}</span>
                     </p>
 
-                    <p class="card-text"><strong>Languages - </strong> {{ $project->languages }}</p>
+                    <p class="card-text"><strong>Technology - </strong>
+                        @forelse($project->technologies as $technology)
+                            <span class="badge"
+                                style="background-color:{{ $technology->color }} ">{{ $technology->name }}</span>
+                        @empty
+                            -
+                        @endforelse
+                    </p>
+
                     <p class="card-text"><strong>Project link - </strong> {{ $project->link }}</p>
                     <p class="card-text"><strong>Image - </strong></p>
                     <div class="col-2">

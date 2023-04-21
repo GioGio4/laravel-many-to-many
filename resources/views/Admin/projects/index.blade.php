@@ -26,14 +26,7 @@
 
                 <th scope="col" class="text-center">Type</th>
 
-
-                <th scope="col"><a
-                        href="{{ route('admin.projects.index') }}?sort=languages&order=@if ($sort == 'languages' && $order != 'DESC') DESC @else ASC @endif">Languages
-                        @if ($sort == 'languages')
-                            <i class="bi bi-arrow-down d-inline-block @if ($order == 'DESC') rotate @endif"></i>
-                        @endif
-                    </a>
-                </th>
+                <th scope="col" class="text-center">Technology</th>
 
                 <th scope="col"><a
                         href="{{ route('admin.projects.index') }}?sort=created_at&order=@if ($sort == 'created_at' && $order != 'DESC') DESC @else ASC @endif">Created
@@ -57,12 +50,28 @@
             @forelse ($projects as $project)
                 <tr>
                     <th scope="row">{{ $project->id }}</th>
+
                     <td>{{ $project->title }}</td>
+
+                    {{-- * Colonna Type --}}
                     <td class="text-center"><span class="badge"
-                            style="background-color:{{ $project->type?->color }} ">{{ $project->type?->name }}</span></td>
-                    <td>{{ $project->languages }}</td>
+                            style="background-color:{{ $project->type?->color }} ">{{ $project->type?->name }}</span>
+                    </td>
+
+                    {{-- * Colonna Technology --}}
+                    <td class="text-center">
+                        @forelse($project->technologies as $technology)
+                            <span class="badge"
+                                style="background-color:{{ $technology->color }} ">{{ $technology->name }}</span>
+                        @empty
+                            -
+                        @endforelse
+                    </td>
+
                     <td>{{ $project->created_at }}</td>
                     <td>{{ $project->updated_at }}</td>
+
+                    {{-- * Colonna Action --}}
                     <td>
                         <a href="{{ route('admin.projects.show', $project) }}"><i class="bi bi-eye-fill"></i></a>
                         <a href="{{ route('admin.projects.edit', $project) }}" class="action-icon"><i

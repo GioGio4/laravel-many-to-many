@@ -18,7 +18,7 @@ class Project extends Model
     }
 
     //* Relazione N-N con technologies
-    public function techlonogies()
+    public function technologies()
     {
         return $this->belongsToMany(Technology::class);
     }
