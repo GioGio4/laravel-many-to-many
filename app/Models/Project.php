@@ -11,12 +11,18 @@ class Project extends Model
 
     protected $fillable = ["title", "languages", "pic", "description", "link", "type_id"];
 
-    //* Relazione
-
+    //* Relazione con Type
     public function type()
     {
         return $this->belongsTo(Type::class);
     }
+
+    //* Relazione N-N con technologies
+    public function techlonogies()
+    {
+        return $this->belongsToMany(Technology::class);
+    }
+
 
     public function getImageUri()
     {
