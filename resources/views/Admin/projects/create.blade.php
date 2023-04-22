@@ -32,18 +32,6 @@
                             @enderror
                         </div>
 
-                        <div class="col-2">
-                            <label for="languages" class="form-label"><strong>Languages</strong></label>
-                            <select class="form-select" aria-label="Default select example" name="languages" id="languages">
-                                <option value="php" class="{{ old('languages') == 'php' ? 'selected' : '' }}">PHP
-                                </option>
-                                <option value="html" class=" {{ old('languages') == 'html' ? 'selected' : '' }}">HTML
-                                </option>
-                                <option value="javascript"class="{{ old('languages') == 'javascript' ? 'selected' : '' }}">
-                                    Javascript
-                                </option>
-                            </select>
-                        </div>
 
                         <div class="col-5">
                             <label for="type_id" class="form-label"><strong>Type</strong></label>
@@ -60,6 +48,28 @@
                                 </div>
                             @enderror
                         </div>
+
+                        {{-- Technologies --}}
+                        <div class="col-5">
+                            <strong>Technologies </strong>
+                            <div class="row">
+                                @foreach ($technologies as $technology)
+                                    <div class="col-3">
+                                        <input type="checkbox" id="technologies-{{ $technology->id }}"
+                                            value="{{ $technology->id }}" name="technologies[]" class="form-check-control"
+                                            @if (in_array($technology->id, old('technologies', $project_technology ?? []))) checked @endif>
+                                        <label for="technologies{{ $technology->id }}">{{ $technology->name }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('technologies')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+
 
                         <div class="col-10">
                             <label for="description" class="form-label"><strong>Description</strong></label>

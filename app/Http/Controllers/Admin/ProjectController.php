@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\Technology;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -36,8 +37,9 @@ class ProjectController extends Controller
     {
         $project = new Project();
         $types = Type::all();
+        $technologies = Technology::orderBy('name')->get();
 
-        return view('admin.projects.create', compact('project', 'types'));
+        return view('admin.projects.create', compact('project', 'types', 'technologies'));
     }
 
     /**
@@ -62,6 +64,8 @@ class ProjectController extends Controller
         $project->fill($data);
         $project->save();
 
+        if (Arr::exists($data, "technologies")) $project->technologies()->attach($data["technologies"]);
+
         return to_route('admin.projects.show', $project);
     }
 
@@ -84,9 +88,13 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        $types = Type::all();
 
-        return view('admin.projects.edit', compact('project', 'types'));
+
+        $types = Type::all();
+        $technologies = Technology::orderBy('name')->get();
+        $project_technologies = $project->technologies->pluck('id')->toArray();
+
+        return view('admin.projects.edit', compact('project', 'types', 'technologies', 'project_technologies'));
     }
 
     /**
@@ -96,18 +104,32 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
+
+
+
     public function update(Request $request, Project $project)
     {
-        $data = $this->validation($request->all());
 
-        //* Metodo caricamento immagine   
+        $data = $this->validation($request->all(), $project->id);
+
+        //* Metodo caricamento immagine 
+
         if (Arr::exists($data, 'pic')) {
             if ($project->pic) Storage::delete($project->pic);
             $img_path = Storage::put('uploads/projects', $data['pic']);
             $data['pic'] =  $img_path;
         }
 
+
         $project->update($data);
+
+        if (Arr::exists($data, "technologies"))
+            $project->technologies()->sync($data["technologies"]);
+        else
+            $project->technologies()->detach();
+
+
+
         return to_route('admin.projects.show', $project);
     }
 
@@ -120,6 +142,9 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         if ($project->pic) Storage::delete($project->pic);
+
+        $project->technologies()->detach();
+
         $project->delete();
 
 
@@ -137,14 +162,14 @@ class ProjectController extends Controller
                 'title'  => 'required|string|max:100',
                 'pic' => 'nullable|image|mimes:png,jpg,jpeg',
                 'description' => 'required|string',
-                'languages' => 'required',
                 'link' => 'nullable|string',
-                'type_id' => 'nullable|exists:types,id'
+                'type_id' => 'nullable|exists:types,id',
+                'technologies' => 'nullable|exists:technologies,id'
             ],
             [
                 'title.required' => 'il campo è richiesto',
                 'description.required' => 'il campo è richiesto',
-                'languages.required' => 'il campo è richiesto',
+                'technologies.exists' => 'I tag selezionati non sono validi',
 
                 'title.string' => 'il campo deve essere una stringa',
                 'pic.image' => 'Il file caricato deve essere un immagine',
